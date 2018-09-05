@@ -2,10 +2,12 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule, InjectionToken } from '@angular/core';
 import { RouterModule, UrlHandlingStrategy } from '@angular/router';
 
-import { UpgradeModule, downgradeComponent } from '@angular/upgrade/static';
+import { UpgradeModule, downgradeComponent, downgradeInjectable } from '@angular/upgrade/static';
 import { AppComponent } from './app.component';
 import { Ng2DemoComponent } from "ng2/app/ng2-demo.component";
 import { phoneServiceProvider } from "ng2/app/phone.service";
+
+import { TestDateService } from 'ng2/app/services/test-date.service'
 
 declare var angular: any;
 
@@ -20,8 +22,10 @@ export class CustomHandlingStrategy implements UrlHandlingStrategy {
 angular.module('phonecatApp')
   .directive(
     'ng2Demo',
-    downgradeComponent({component: Ng2DemoComponent})
-  );
+    downgradeComponent({ component: Ng2DemoComponent })
+  )
+  .factory("testDateService", downgradeInjectable(TestDateService))
+
 
 @NgModule({
   declarations: [
@@ -42,10 +46,10 @@ angular.module('phonecatApp')
         component: Ng2DemoComponent
       }
     ],
-    {
-      useHash: true,
-      enableTracing: true
-    }
+      {
+        useHash: true,
+        enableTracing: true
+      }
     )
   ],
   entryComponents: [
@@ -53,17 +57,18 @@ angular.module('phonecatApp')
   ],
   providers: [
     phoneServiceProvider,
+    TestDateService,
     { provide: UrlHandlingStrategy, useClass: CustomHandlingStrategy }
   ],
   bootstrap: [AppComponent]
 })
 
 export class AppModule {
-/*
-  constructor(private upgrade: UpgradeModule) { }
-  ngDoBootstrap() {
-    this.upgrade.bootstrap(document.body, ['phonecatApp'], { strictDi: true });
-  }
-*/
+  /*
+    constructor(private upgrade: UpgradeModule) { }
+    ngDoBootstrap() {
+      this.upgrade.bootstrap(document.body, ['phonecatApp'], { strictDi: true });
+    }
+  */
 }
 
